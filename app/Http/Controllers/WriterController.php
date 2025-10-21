@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\WriterRequest;
 use App\Models\WriterModel;
 
 class WriterController extends Controller
@@ -28,14 +28,9 @@ class WriterController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(WriterRequest $request)
     {
-        $request->validate([
-        'name' => 'required|string|max:255',
-        'bio' => 'nullable|string',
-        'portrait' => 'nullable|image|max:2048',
-    ]);
-
+       
     $portraitPath = null;
     if ($request->hasFile('portrait')) {
         $portraitPath = $request->file('portrait')->store('writers', 'public');
@@ -73,33 +68,28 @@ class WriterController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(WriterRequest $request, string $id)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'bio' => 'nullable|string',
-            'portrait' => 'nullable|image|max:2048',
-        ]);
-
-        $writers = WriterModel::find($id);
-        $writers->name = $request->name;
+        $writers = WriterModel::findOrFail($id);
+        $writers->update($request->all());
+        /*$writers->name = $request->name;
         $writers->bio = $request->bio;
         if ($request->hasFile('portrait')) {
             $writers->portrait_path = $request->file('portrait')->store('writers', 'public');
-        }
+        }*/
 
-        $writers->save();
-
-        return redirect()->route('writers.index')->with('success', 'Author successfully updated.');
+        //return redirect()->route('writers.index')->with('success', 'Author successfully updated.');
+        return response()->json(['writer' => $writers]);
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-        $writers = WriterModel::find($id);
+        $writers = WriterModel::findOrFail($id);
         $writers->delete();
 
-        return redirect()->route('writers.index')->with('success', 'Author successfully deleted. ');
+        /*return redirect()->route('writers.index')->with('success', 'Author successfully deleted. ');*/
+        return response()->json(['message' => 'Deleted successfully.', 'id' => $id]);
     }
 }
