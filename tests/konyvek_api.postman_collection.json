@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "13fb4648-a20c-4aa2-b34c-3fafae589cd1",
+		"name": "konyvek_api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "49259282",
+		"_collection_link": "https://kittijenei2-988034.postman.co/workspace/kackukac's-Workspace~8dc18641-8e52-476f-8a3b-16cbdc2a403b/collection/49259282-13fb4648-a20c-4aa2-b34c-3fafae589cd1?action=share&source=collection_link&creator=49259282"
+	},
+	"item": [
+		{
+			"name": "PostLogin",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"kitti@kitti.com\",\r\n    \"password\": \"admin123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/users/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetUser",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "2|Sc73BapghPwHYANzNAlgbGMIBKImIp3aDPEUpELwe0e3b4cc",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetWriters",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNewWriter",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hgicfvrx6b7EXhccL0hN9ruZaysAs6n1kPJMPkYE172f37ab",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"name\": \"Leiner Laura\",\r\n    \"portrait_path\": \"/portraits/leiner_laura.jpg\",\r\n    \"bio\": \"Sikeres magyar írónő\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditWriter",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"kitti@kitti.com\",\r\n    \"password\": \"123\"\r\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteWriter",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hgicfvrx6b7EXhccL0hN9ruZaysAs6n1kPJMPkYE172f37ab",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/writers/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBooks",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hNWmCY0VaushEZPmDqiBgAtm5ueeiVnjJyra8NUCd0df7a63",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8000/api/writers/1/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"1",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CreateNewBook",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hNWmCY0VaushEZPmDqiBgAtm5ueeiVnjJyra8NUCd0df7a63",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"Finom\",\r\n    \"author_id\": \"1\",\r\n    \"image_path\": \"/images/konyvkep\",\r\n    \"iban\":\"748237842\",\r\n    \"price\":\"1200\",\r\n    \"description\":\"Finom könyv\",\r\n    \"genre\":\"Novel\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers/2/books",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"2",
+						"books"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EditBook",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hNWmCY0VaushEZPmDqiBgAtm5ueeiVnjJyra8NUCd0df7a63",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"title\": \"ok\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers/2/books/2",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"2",
+						"books",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Validate status code is 200 or 204",
+							"pm.test(\"Status code is 200 or 204\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 204]);",
+							"});",
+							"",
+							"// If response has a body, Content-Type should be JSON and structure should be as expected",
+							"pm.test(\"If body is present, it is JSON and has expected structure\", function () {",
+							"    const hasBody = pm.response.text() && pm.response.text().trim().length > 0;",
+							"    if (!hasBody) {",
+							"        pm.expect(pm.response.code).to.eql(204);",
+							"        return;",
+							"    }",
+							"",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    const contentType = pm.response.headers.get(\"Content-Type\");",
+							"    pm.expect(contentType).to.include(\"application/json\");",
+							"",
+							"    let json;",
+							"    try {",
+							"        json = pm.response.json();",
+							"    } catch (e) {",
+							"        pm.expect.fail(\"Response body is not valid JSON\");",
+							"    }",
+							"",
+							"    // Allow common delete response shapes: { success: true, message?: string, data?: any } or { message: string }",
+							"    pm.test(\"JSON has acceptable delete response shape\", function () {",
+							"        pm.expect(json).to.be.an(\"object\");",
+							"        const hasSuccessBool = Object.prototype.hasOwnProperty.call(json, \"success\") && typeof json.success === \"boolean\";",
+							"        const hasMessage = Object.prototype.hasOwnProperty.call(json, \"message\") && typeof json.message === \"string\";",
+							"        const hasData = Object.prototype.hasOwnProperty.call(json, \"data\");",
+							"        pm.expect(hasSuccessBool || hasMessage || hasData).to.eql(true);",
+							"    });",
+							"});",
+							"",
+							"// Warn if admin token variable is missing",
+							"pm.test(\"Admin token variable present\", function () {",
+							"    const token = pm.environment.get(\"admin\");",
+							"    pm.expect(!!token, \"Environment variable 'admin' is missing. Set it to your Bearer token.\").to.eql(true);",
+							"});",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {},
+						"requests": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "1|hNWmCY0VaushEZPmDqiBgAtm5ueeiVnjJyra8NUCd0df7a63",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer {{admin}}"
+					},
+					{
+						"key": "X-HTTP-Method-Override",
+						"value": "DELETE"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "_method",
+							"value": "DELETE",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8000/api/writers/1/books/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"writers",
+						"1",
+						"books",
+						"1"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "1|hgicfvrx6b7EXhccL0hN9ruZaysAs6n1kPJMPkYE172f37ab",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
