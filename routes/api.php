@@ -17,10 +17,10 @@ Route::patch('/writers/{id}', [WriterController::class, 'update'])->middleware('
 
 Route::delete('/writers/{id}',[WriterController::class, 'destroy'])->middleware('auth:sanctum');
 
-Route::get('/writers/{author_id}/books', [WriterController::class, 'index']);
+Route::get('/writers/{author_id}/books', [BookController::class, 'index']);
 
-Route::post('/writers/{author_id}/books', [WriterController::class, 'store'])->middleware('auth:sanctum');
+Route::post('/writers/{author_id}/books', [BookController::class, 'store'])->middleware('auth:sanctum');
 
-Route::patch('/writers/{author_id}/books/{id}', [WriterController::class, 'update'])->middleware('auth:sanctum');
+Route::patch('/writers/{author_id}/books/{id}', [BookController::class, 'update'])->middleware('auth:sanctum');
 
 Route::delete('/writers/{author_id}/books/{id}',[WriterController::class, 'destroy'])->middleware('auth:sanctum');
