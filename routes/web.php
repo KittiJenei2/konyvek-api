@@ -21,5 +21,10 @@ Route::resource('writers', WriterController::class);
 // EZ A SOR HIÁNYOZHAT NÁLAD:
 Route::get('/writers/{author_id}/books', [BookController::class, 'index'])->name('books.index');
 
+Route::get('/writers/{author_id}/books/create', [BookController::class, 'create'])->name('books.create');
+
 Route::post('/writers/{author_id}/books', [BookController::class, 'store'])->name('books.store');
 Route::delete('/writers/{author_id}/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');
+
+Route::get('/writers/{author_id}/books/{id}/edit', [BookController::class, 'edit'])->name('books.edit');
+Route::put('/writers/{author_id}/books/{id}', [BookController::class, 'update'])->name('books.update');

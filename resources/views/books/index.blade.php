@@ -8,7 +8,7 @@
 
 @if(Session::has('api_token'))
     <div class="mb-3">
-        <button class="btn btn-primary">Új könyv hozzáadása (WIP)</button>
+        <a href="{{ route('books.create', $author_id) }}" class="btn btn-primary">Új könyv hozzáadása</a>
     </div>
 @endif
 
@@ -32,7 +32,7 @@
                 
                 @if(Session::has('api_token'))
                     <div class="card-footer bg-white border-top-0 d-flex justify-content-between">
-                        <a href="#" class="btn btn-warning btn-sm">Szerkesztés</a>
+                        <a href="{{ route('books.edit', ['author_id' => $author_id, 'id' => $book['id']]) }}" class="btn btn-warning btn-sm">Szerkesztés</a>
                         <form action="{{ url('/writers/' . $author_id . '/books/' . $book['id']) }}" method="POST">
                             @csrf
                             @method('DELETE')

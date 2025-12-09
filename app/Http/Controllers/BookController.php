@@ -43,9 +43,87 @@ class BookController extends Controller
 
     public function store(Request $request, $author_id)
     {
-        // Könyv létrehozása az adott szerzőhöz
-        $this->api->post("/writers/{$author_id}/books", $request->all());
+        // 1. Validáció
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'iban' => 'required|string|max:20',
+            'genre' => 'nullable|string',
+            'description' => 'nullable|string',
+            'image_path' => 'nullable|image|max:2048', // Opcionális borítókép
+        ]);
+
+        // 2. Fájl előkészítése
+        $files = [];
+        if ($request->hasFile('image_path')) {
+            $files['image_path'] = $request->file('image_path');
+        }
+
+        // 3. API hívás (POST /writers/{id}/books)
+        // Fontos: Az except-tel kivesszük a fájlt a sima adatok közül
+        $response = $this->api->post("/writers/{$author_id}/books", $request->except('image_path'), $files);
+
+        // 4. Válasz kezelése
+        if ($response->successful()) {
+            return redirect()->route('books.index', $author_id)
+                             ->with('success', 'Könyv sikeresen hozzáadva!');
+        }
+
+        return back()
+            ->withErrors(['api_error' => 'Hiba történt a könyv mentésekor.'])
+            ->withInput();
+    }
+
+    public function create($author_id)
+    {
+        return view('books.create', compact('author_id'));
+    }
+
+
+    public function edit($author_id, $id)
+    {
+        $response = $this->api->get("/writers/{$author_id}/books/{$id}");
+
+        if ($response->successful()) {
+            $book = $response->json();
+            return view('books.edit', compact('book', 'author_id'));
+        }
+
+        return back()->withErrors(['api_error' => 'A könyv nem található (API hiba).']);
+    }
+
+    public function update(Request $request, $author_id, $id)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'price' => 'required|numeric|min:0',
+            'iban' => 'required|string|max:20',
+            'genre' => 'nullable|string',
+            'description' => 'nullable|string',
+            'image_path' => 'nullable|image|max:2048',
+        ]);
+
+        $files = [];
+        if ($request->hasFile('image_path')) {
+            $files['image_path'] = $request->file('image_path');
+        }
+
+        // JAVÍTÁS: Itt is {$id} kell!
+        $endpoint = "/writers/{$author_id}/books/{$id}";
         
-        return back();
+        if (!empty($files)) {
+            $data = $request->except('image_path');
+            $data['_method'] = 'PATCH'; 
+            $response = $this->api->post($endpoint, $data, $files);
+        } else {
+            $response = $this->api->patch($endpoint, $request->except('image_path'));
+        }
+
+        if ($response->successful()) {
+            return redirect()->route('books.index', $author_id)
+                             ->with('success', 'Könyv sikeresen frissítve!');
+        }
+
+        return back()->withErrors(['api_error' => 'Hiba történt a frissítéskor.'])->withInput();
     }
 }
