@@ -157,10 +157,14 @@ class WriterController extends Controller
      */
     public function update(WriterRequest $request, string $id)
     {
-        $writers = WriterModel::findOrFail($id);
-        $writers->update($request->all());
+        $writer = WriterModel::find($id);
+        if (!$writer) {
+        return response()->json(['message' => 'Not found!'], 404);
+        }
 
-        return response()->json(['writer' => $writers]);
+        $writer->update($request->all());
+
+        return response()->json($writer, 200);
     }
 
     /**
@@ -182,11 +186,17 @@ class WriterController extends Controller
      *   "id": 2
      * }
      */
-    public function destroy(string $id)
-    {
-        $writers = WriterModel::findOrFail($id);
-        $writers->delete();
+public function destroy(string $id)
+{
+    $writer = WriterModel::find($id);
 
-        return response()->json(['message' => 'Deleted successfully.', 'id' => $id]);
+    if (!$writer) {
+        return response()->json(['message' => 'Not found!'], 404);
     }
+
+    $writer->delete();
+
+    return response()->json(['message' => 'Deleted'], 410);
+}
+
 }
