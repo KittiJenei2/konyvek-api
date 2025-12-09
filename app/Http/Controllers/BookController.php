@@ -126,4 +126,15 @@ class BookController extends Controller
 
         return back()->withErrors(['api_error' => 'Hiba történt a frissítéskor.'])->withInput();
     }
+
+        public function destroy($id)
+    {
+        $response = $this->api->delete("/writers/{$id}/books");
+
+        if ($response->successful()) {
+            return redirect()->route('writers.index')->with('success', 'Szerző törölve.');
+        }
+
+        return back()->withErrors(['api_error' => 'Hiba a törlésnél.']);
+    }
 }

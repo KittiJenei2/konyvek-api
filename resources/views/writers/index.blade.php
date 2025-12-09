@@ -6,7 +6,6 @@
     <div>
         <a href="{{ route('writers.index', ['export' => 'csv']) }}" class="btn btn-outline-success btn-sm">CSV Export</a>
         <a href="{{ route('writers.index', ['export' => 'pdf']) }}" class="btn btn-outline-danger btn-sm">PDF Export</a>
-
         @if(Session::has('api_token'))
             <a href="{{ route('writers.create') }}" class="btn btn-primary btn-sm ms-2">Új szerző</a>
         @endif

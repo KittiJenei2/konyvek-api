@@ -20,26 +20,25 @@ class WriterController extends Controller
     {
         $response = $this->api->get('/writers');
 
-        // JAVÍTÁS ITT: Megnézzük, sikeres-e a kérés, és elkérjük a 'writers' kulcsot!
         if ($response->successful()) {
-            $writers = $response->json('writers');
-            
-            // Ha a backend valamilyen okból mégsem adta vissza a 'writers' kulcsot, biztosítunk üres tömböt.
-            $writers = is_array($writers) ? $writers : []; 
+            $writers = $response->json('writers'); // Vagy 'data', ahogy a backend adja
+            $writers = is_array($writers) ? $writers : [];
         } else {
-            // Hiba esetén üres tömb, és hibaüzenet
             $writers = [];
-            // Megjegyzés: ezt a hibaüzenetet a layouts/app.blade.php-ban kell megjeleníteni
-            return back()->withErrors(['api_error' => 'Hiba történt a szerzők lekérdezésekor: ' . $response->status()]);
+            if (!$request->has('export')) { // Exportnál ne dobjunk view hibát
+                return back()->withErrors(['api_error' => 'Hiba az API elérésekor.']);
+            }
         }
 
-        // CSV Export és PDF Export logika (ha kéri a request, ezt már korábban megbeszéltük)
+        // --- CSV EXPORT ---
         if ($request->has('export') && $request->export == 'csv') {
             return $this->exportCsv($writers);
         }
-        
+
+        // --- PDF EXPORT ---
         if ($request->has('export') && $request->export == 'pdf') {
-            return $this->exportPdf($writers);
+            $pdf = Pdf::loadView('exports.writers_pdf', ['writers' => $writers]);
+            return $pdf->download('szerzok_lista.pdf');
         }
 
         return view('writers.index', compact('writers'));
@@ -85,24 +84,34 @@ class WriterController extends Controller
     // CSV Export metódus (egyszerű megoldás)
     private function exportCsv($data)
     {
+        // 1. A HIÁNYZÓ RÉSZ: A $headers változó definiálása
         $headers = [
             "Content-type"        => "text/csv",
-            "Content-Disposition" => "attachment; filename=szerzok.csv",
+            "Content-Disposition" => "attachment; filename=szerzok_lista.csv",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
             "Expires"             => "0"
         ];
 
+        // 2. A callback függvény a tartalom generálásához
         $callback = function() use ($data) {
             $file = fopen('php://output', 'w');
-            fputcsv($file, ['Név', 'Bio']); // Fejléc
+            fputs($file, "\xEF\xBB\xBF"); // BOM a helyes ékezetekhez Excelben
+            
+            // Fejléc (Dátum nélkül, ahogy javítottuk)
+            fputcsv($file, ['ID', 'Név', 'Biográfia'], ';');
 
             foreach ($data as $row) {
-                fputcsv($file, [$row['name'], $row['bio']]);
+                fputcsv($file, [
+                    $row['id'],
+                    $row['name'],
+                    $row['bio'] ?? '', // Ha nincs bio, üres legyen
+                ], ';');
             }
             fclose($file);
         };
 
+        // 3. Válasz visszaadása a $headers változóval
         return response()->stream($callback, 200, $headers);
     }
 
