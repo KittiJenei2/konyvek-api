@@ -18,13 +18,26 @@ class BookController extends Controller
 
     public function index($author_id)
     {
-        // Lekérjük a könyveket az adott szerzőhöz
-        $response = $this->api->get("/writers/{$author_id}/books");
+        // 1. Összeállítjuk az URL-t (pl. /writers/1/books)
+        $endpoint = "/writers/{$author_id}/books";
         
-        // Ellenőrizzük, hogy sikeres-e a kérés, mielőtt lekérjük a JSON-t
-        // Ha nem, üres tömböt adunk vissza, hogy ne omoljon össze a nézet
-        $books = $response->successful() ? $response->json() : [];
+        // 2. API hívás
+        $response = $this->api->get($endpoint);
         
+        // 3. Adatok kinyerése a 'books' kulcsból, ha sikeres
+        if ($response->successful()) {
+            $books = $response->json('books');
+            // Biztosítjuk, hogy tömb legyen (ha esetleg null-t kapnánk)
+            $books = is_array($books) ? $books : []; 
+        } else {
+            // Hiba esetén üres tömb és hibaüzenet
+            $books = [];
+            return back()->withErrors([
+                'api_error' => 'Hiba történt a könyvek lekérdezésekor. Ellenőrizze az API futását és a paramétert.'
+            ]);
+        }
+        
+        // 4. Átadjuk a nézetnek
         return view('books.index', compact('books', 'author_id'));
     }
 

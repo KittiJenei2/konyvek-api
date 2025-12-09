@@ -1,17 +1,25 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\WriterController;
-use App\Http\Controllers\BookController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\BookController; 
 
-// Bejelentkezés űrlap és logika
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login'); // Ezt még meg kell írni a Controllerben (csak egy view-t ad vissza)
+Route::get('/', function () {
+    return redirect()->route('writers.index');
+});
+
+// Auth útvonalak
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Szerzők és könyvek (csak védett útvonalak)
-Route::group(['middleware' => 'web'], function () {
-    Route::get('/writers', [WriterController::class, 'index'])->name('writers.index');
-    // ... többi route ...
-});
+// Szerzők
+Route::resource('writers', WriterController::class);
+
+// Könyvek (Szerzőhöz kapcsolva)
+// EZ A SOR HIÁNYOZHAT NÁLAD:
+Route::get('/writers/{author_id}/books', [BookController::class, 'index'])->name('books.index');
+
+Route::post('/writers/{author_id}/books', [BookController::class, 'store'])->name('books.store');
+Route::delete('/writers/{author_id}/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');

@@ -16,17 +16,28 @@ class WriterController extends Controller
         $this->api = $api;
     }
 
-    public function index(Request $request)
+   public function index(Request $request)
     {
         $response = $this->api->get('/writers');
-        $writers = $response->json(); // Feltételezzük, hogy az API JSON listát ad
 
-        // CSV Export
+        // JAVÍTÁS ITT: Megnézzük, sikeres-e a kérés, és elkérjük a 'writers' kulcsot!
+        if ($response->successful()) {
+            $writers = $response->json('writers');
+            
+            // Ha a backend valamilyen okból mégsem adta vissza a 'writers' kulcsot, biztosítunk üres tömböt.
+            $writers = is_array($writers) ? $writers : []; 
+        } else {
+            // Hiba esetén üres tömb, és hibaüzenet
+            $writers = [];
+            // Megjegyzés: ezt a hibaüzenetet a layouts/app.blade.php-ban kell megjeleníteni
+            return back()->withErrors(['api_error' => 'Hiba történt a szerzők lekérdezésekor: ' . $response->status()]);
+        }
+
+        // CSV Export és PDF Export logika (ha kéri a request, ezt már korábban megbeszéltük)
         if ($request->has('export') && $request->export == 'csv') {
             return $this->exportCsv($writers);
         }
         
-        // PDF Export
         if ($request->has('export') && $request->export == 'pdf') {
             return $this->exportPdf($writers);
         }
@@ -36,14 +47,32 @@ class WriterController extends Controller
 
     public function store(Request $request)
     {
-        // Fájl feltöltés előkészítése
+        // 1. Validáció a kliens oldalon (hogy ne küldjünk hibás adatot)
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
+            'portrait_path' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Kép ellenőrzés
+        ]);
+
+        // 2. Fájl előkészítése, ha van feltöltve
         $files = [];
         if ($request->hasFile('portrait_path')) {
             $files['portrait_path'] = $request->file('portrait_path');
         }
 
-        $this->api->post('/writers', $request->all(), $files);
-        return redirect()->route('writers.index');
+        // 3. Küldés az API-nak
+        // Az ApiService post metódusa: post($url, $adatok, $fajlok)
+        $response = $this->api->post('/writers', $request->except('portrait_path'), $files);
+
+        // 4. Válasz kezelése
+        if ($response->successful()) {
+            return redirect()->route('writers.index')->with('success', 'Szerző sikeresen létrehozva!');
+        }
+
+        // Hiba esetén visszaküldjük az űrlapra a hibaüzenettel és a beírt adatokkal
+        return back()
+            ->withErrors(['api_error' => 'Hiba történt a mentés során.'])
+            ->withInput();
     }
 
     // PDF Export metódus
@@ -75,5 +104,63 @@ class WriterController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    public function create()
+    {
+        return view('writers.create');
+    }
+
+    public function edit($id)
+    {
+        // Lekérjük a szerző adatait az API-tól
+        $response = $this->api->get("/writers/{$id}");
+
+        if ($response->successful()) {
+            $writer = $response->json();
+            return view('writers.edit', compact('writer'));
+        }
+
+        return back()->withErrors(['api_error' => 'A szerző nem található vagy hiba történt.']);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'bio' => 'nullable|string',
+            'portrait_path' => 'nullable|image|max:2048',
+        ]);
+
+        $files = [];
+        if ($request->hasFile('portrait_path')) {
+            $files['portrait_path'] = $request->file('portrait_path');
+        }
+        
+        if (!empty($files)) {
+            $data = $request->except('portrait_path');
+            $data['_method'] = 'PATCH';
+            $response = $this->api->post("/writers/{$id}", $data, $files);
+        } else {
+
+            $response = $this->api->patch("/writers/{$id}", $request->except('portrait_path'));
+        }
+
+        if ($response->successful()) {
+            return redirect()->route('writers.index')->with('success', 'Szerző sikeresen frissítve!');
+        }
+
+        return back()->withErrors(['api_error' => 'Hiba történt a frissítés során.'])->withInput();
+    }
+
+    public function destroy($id)
+    {
+        $response = $this->api->delete("/writers/{$id}");
+
+        if ($response->successful()) {
+            return redirect()->route('writers.index')->with('success', 'Szerző törölve.');
+        }
+
+        return back()->withErrors(['api_error' => 'Hiba a törlésnél.']);
     }
 }

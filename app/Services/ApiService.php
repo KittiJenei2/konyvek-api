@@ -12,7 +12,7 @@ class ApiService
 
     public function __construct()
     {
-        $this->baseUrl = 'http://localhost:8000/books'; 
+        $this->baseUrl = 'http://localhost:8000/api'; 
     }
 
     protected function getClient()
